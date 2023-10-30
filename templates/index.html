@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tax Calculator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+    <script href="{{ url_for('static', filename='script.js') }}"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        form label,
+        form input {
+            display: block;
+            margin-bottom: 10px;
+            font-family: monospace;
+        }
+        
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .hlabel {
+            display: block;
+            font-family: 'Comic Mono', monospace;
+            padding: 10px;
+        }
+        
+        .healths {
+            margin-top: 2px;
+            margin-bottom: 10px;
+            width: 100%;
+            padding: 5px;
+            border: 1px solid #0074cc;
+            background-color: #250bd2;
+            border-radius: 10px;
+        }
+        
+        .contribcl{
+            margin-top: 10px;
+            margin-bottom: 10px;
+            width: 100%;
+            padding: 5px;
+            border: 1px solid #a90914;
+            background-color: #870d7d;
+            border-radius: 10px;
+        }
+        
+        button {
+            background-color: #0074cc;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #c2bde3;
+            border: 1px solid #4703a7;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 20px;
+        }
+        
+        #result p {
+            text-align: center;
+            font-weight: bold;
+            font-size: 20px;
+        }
+        
+        #taxAmount {
+            font-weight: bold;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div>
+            <h1>Tax Calculator</h1>
+        </div>
+        <form id="payslip-form">
+            <label for="gross">Gross Salary:</label>
+            <input type="number" id="gross" name="gross" value="10000"><br>
+            <label class="hlabel" for="health">is Health Contributory:</label>
+            <select class="healths" id="health" name="health">
+                <option value="ue">True</option>
+                <option value="">false</option>
+            </select>
+            <label for="contrib">is Pension Contributory:</label>
+            <select class="contribcl" id="contrib" name="contrib">
+                <option value="True">True</option>
+                <option value="">false</option>
+            </select>
+            <button type="button" id="calculate-button">Calculate Payslip</button>
+        </form>
+        
+        <div id="result">
+           
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
+
+<script>
+    $(document).ready(function() {
+        $("#calculate-button").click(function() {
+            // Get form data
+            var formData = {
+                gross: $("#gross").val(),
+                health: $("#health").val(),
+                contrib: $("#contrib").val()
+            };
+    
+            // Send POST request to Flask server
+            $.ajax({
+                type: "POST",
+                url: "http://127.0.0.1:5000/payslip", // URL of your Flask endpoint
+                data: formData,
+                dataType: "json", // Expected response data type
+                success: function(response) {
+                    console.log(response);
+                    // Display the response in the result div
+                    var formattedPayee = response.payslip.toLocaleString();
+                    $("#result").html("Monthly Payslip: " + formattedPayee + "<br>" +
+                                       "Payee: " + response.payee + "<br>" +
+                                       "Health Insurance payment: " + response.health + "<br>" +
+                                       "National Housing Fund: " + response.housing + "<br>" +
+                                       "Pension: " + response.pension);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error:", error);
+                }
+            });
+        });
+    });
+    
+</script>

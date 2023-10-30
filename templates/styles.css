@@ -1,0 +1,80 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+form label,
+form input {
+    display: block;
+    margin-bottom: 10px;
+}
+
+input[type="number"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.healths {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #0074cc;
+    background-color: #250bd2;
+    border-radius: 10px;
+}
+
+.contribcl{
+    margin-top: 10px;
+    margin-bottom: 10px;
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #a90914;
+    background-color: #870d7d;
+    border-radius: 10px;
+}
+
+button {
+    background-color: #0074cc;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#result {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #250bd2;
+    border: 1px solid #4703a7;
+    border-radius: 5px;
+}
+
+#result p {
+    text-align: center;
+}
+
+#taxAmount {
+    font-weight: bold;
+    font-size: 20px;
+}
