@@ -10,7 +10,7 @@ $(document).ready(function() {
         // Send POST request to Flask server
         $.ajax({
             type: "POST",
-            url: "http://127.0.0.1:5000/payslip", // URL of your Flask endpoint
+            url: "http://147.182.228.231:5000/payslip", // URL of your Flask endpoint
             data: formData,
             dataType: "json", // Expected response data type
             success: function(response) {

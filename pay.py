@@ -270,7 +270,6 @@ class Grade:
             (self.get_gross_income() / 12)
             - (self.payee_logic() / 12)
             - (self.get_health_empl() / 12)
-            - (self.get_housing())
             - self.get_water_fee(),
             2,
         )

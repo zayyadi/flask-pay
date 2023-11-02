@@ -31,7 +31,7 @@ def payslip():
     )  # type: ignore
     monthly_pay = grade.get_net_pay()
     payee = grade.monthly_payee()
-    health = grade.get_health_ins()
+    health = grade.get_health_empl()
     housing = grade.get_housing()
     pension = grade.get_total_pension() / 12
     response = jsonify(
@@ -52,4 +52,4 @@ def payslip():
 
 if __name__ == "__main__":
     print("Starting Python Flask Server For Payslip...")
-    app.run(debug=True)
+    app.run(host='127.0.0.1',debug=True)
