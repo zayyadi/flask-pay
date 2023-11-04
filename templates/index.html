@@ -18,9 +18,9 @@
         }
         
         .container {
-            max-width: 400px;
+            max-width: 500px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 30px;
             background-color: #fff;
             border: 1px solid #ddd;
             border-radius: 5px;
@@ -60,6 +60,15 @@
             border: 1px solid #0074cc;
             background-color: #250bd2;
             border-radius: 10px;
+        }
+        .housing {
+        margin-top: 10px;
+        margin-bottom: 30px;
+        width: 100%;
+        padding: 5px;
+        border: 1px solid #c20ea4;
+        background-color: #890bd2;
+        border-radius: 10px;
         }
         
         .contribcl{
@@ -111,13 +120,18 @@
         <form id="payslip-form">
             <label for="gross">Gross Salary:</label>
             <input type="number" id="gross" name="gross" value="10000"><br>
-            <label class="hlabel" for="health">is Health Contributory:</label>
+            <label class="hlabel" for="health">is Health Contribution?:</label>
             <select class="healths" id="health" name="health">
                 <option value="ue">True</option>
                 <option value="">false</option>
             </select>
-            <label for="contrib">is Pension Contributory:</label>
+            <label for="contrib">is Pension Contributory?:</label>
             <select class="contribcl" id="contrib" name="contrib">
+                <option value="True">True</option>
+                <option value="">false</option>
+            </select>
+            <label for="housing">is Housing contribution?:</label>
+            <select class="housingl" id="housing" name="housing">
                 <option value="True">True</option>
                 <option value="">false</option>
             </select>
@@ -140,7 +154,8 @@
             var formData = {
                 gross: $("#gross").val(),
                 health: $("#health").val(),
-                contrib: $("#contrib").val()
+                contrib: $("#contrib").val(),
+                housing: $("#housing").val()
             };
     
             // Send POST request to Flask server
@@ -153,11 +168,13 @@
                     console.log(response);
                     // Display the response in the result div
                     var formattedPayee = response.payslip.toLocaleString();
-                    $("#result").html("Monthly Payslip: " + formattedPayee + "<br>" +
-                                       "Payee: " + response.payee + "<br>" +
-                                       "Health Insurance payment: " + response.health + "<br>" +
-                                       "National Housing Fund: " + response.housing + "<br>" +
-                                       "Pension: " + response.pension);
+                    $("#result").html("Monthly Payslip: " + "₦"  + formattedPayee + "<br>" +
+                                       "Payee: " + "₦"  + response.payee + "<br>" +
+                                       "Health Insurance payment: " + "₦"  + response.health + "<br>" +
+                                       "National Housing Fund: " + "₦" + response.housing + "<br>" +
+                                       "National Social Insurance Trust Fund: " + "₦"  + response.nsitf + "<br>" +
+                                       "Employee Pension Contribution: " + "₦"  + response.emp_pension + "<br>" +
+                                       "Total Pension to be remitted: " + "₦"  + response.pension);
                 },
                 error: function(xhr, status, error) {
                     console.error("Error:", error);

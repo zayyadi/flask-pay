@@ -43,7 +43,17 @@ input[type="number"] {
     border-radius: 10px;
 }
 
-.contribcl{
+.housing {
+    margin-top: 10px;
+    margin-bottom: 30px;
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #c20ea4;
+    background-color: #890bd2;
+    border-radius: 10px;
+}
+
+.contribcl {
     margin-top: 10px;
     margin-bottom: 10px;
     width: 100%;

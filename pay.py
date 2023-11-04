@@ -15,6 +15,9 @@ class Grade:
     water_fee: Decimal = field(default=150)  # type: ignore
     health_ins: bool | None = field(default=False)
     contrib: bool | None = field(default=False)
+    housing: bool | None = field(default=False)
+    # Optional[bool]
+    
 
     def get_annual_gross(self) -> Decimal:
         return Decimal(self.gross * 12)
@@ -73,7 +76,12 @@ class Grade:
         return self.get_pension_employees()
 
     def get_housing(self):
-        return self.gross * var.HOUSING_PERC.value / 100
+        if self.housing:
+            return self.gross * var.HOUSING_PERC.value / 100
+        return Decimal(0.0)
+    
+    def get_nsitf(self)-> Decimal | None:
+        return Decimal(self.get_bht() * 1 / 100)
 
     def get_gross_income(self) -> Decimal:
         return Decimal(self.get_annual_gross()) - Decimal(self.pension_logic())
@@ -269,8 +277,10 @@ class Grade:
         return round(
             (self.get_gross_income() / 12)
             - (self.payee_logic() / 12)
-            - (self.get_health_empl() / 12)
-            - self.get_water_fee(),
+            - (self.get_health_empl())
+            - (self.get_water_fee())
+            - (self.get_housing())
+            - (self.get_nsitf()/12),
             2,
         )
 

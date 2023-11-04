@@ -19,8 +19,10 @@ def payslip():
     gross = Decimal(request.form["gross"])
     health = request.form["health"]
     contrib = request.form["contrib"]
+    housing = request.form["housing"]
     health = bool(health)
     contrib = bool(contrib)
+    housing = bool(housing)
     print(f"gross: {gross}")
     print(f"health: {health}, {type(health)}")
     print(f"contrib: {contrib}, {type(contrib)}")
@@ -34,6 +36,8 @@ def payslip():
     health = grade.get_health_empl()
     housing = grade.get_housing()
     pension = grade.get_total_pension() / 12
+    emp_pension = grade.get_pension_employees() / 12
+    nsitf = grade.get_nsitf()/12
     response = jsonify(
         {
             "payslip": f"{monthly_pay:,}",
@@ -41,12 +45,13 @@ def payslip():
             "health": f"{health:,}",
             "housing": f"{housing:,}",
             "pension": f"{pension:,}",
+            "emp_pension": f"{emp_pension:,}",
+            "nsitf": f"{nsitf:,}",
         }
     )
     response.headers.add("Access-Control-Allow-Origin", "*")
     response.headers.add("Access-Control-Allow-Headers", "*")
     response.headers.add("Access-Control-Allow-Methods", "*")
-    print(f"response: {response}")
     return response
 
 
