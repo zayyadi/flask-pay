@@ -20,6 +20,7 @@
         .container {
             max-width: 500px;
             margin: 0 auto;
+            margin-top: 1opx;
             padding: 30px;
             background-color: #fff;
             border: 1px solid #ddd;
@@ -165,7 +166,6 @@
                 data: formData,
                 dataType: "json", // Expected response data type
                 success: function(response) {
-                    console.log(response);
                     // Display the response in the result div
                     var formattedPayee = response.payslip.toLocaleString();
                     $("#result").html("Monthly Payslip: " + "₦"  + formattedPayee + "<br>" +

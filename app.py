@@ -30,6 +30,7 @@ def payslip():
         gross=gross,
         health_ins=bool(health),
         contrib=bool(contrib),
+        housing=housing,
     )  # type: ignore
     monthly_pay = grade.get_net_pay()
     payee = grade.monthly_payee()
