@@ -17,7 +17,6 @@ class Grade:
     contrib: bool | None = field(default=False)
     housing: bool | None = field(default=False)
     # Optional[bool]
-    
 
     def get_annual_gross(self) -> Decimal:
         return Decimal(self.gross * 12)
@@ -57,14 +56,14 @@ class Grade:
         if self.get_annual_gross() <= var.THREE_SIXTY.value:
             return 0.0  # type: ignore
         if self.contrib is True:
-            return self.get_bht() * 8 / 100
-        return self.get_bht() * 18 / 100  # type: ignore
+            return self.get_annual_gross() * 8 / 100
+        return self.get_annual_gross() * 18 / 100  # type: ignore
 
     def get_pension_employer(self) -> Decimal:
         if self.get_annual_gross() <= var.THREE_SIXTY.value:
             return 0.0  # type: ignore
         if self.contrib is True:
-            return self.get_bht() * 10 / 100  # type: ignore
+            return self.get_annual_gross() * 10 / 100  # type: ignore
         return Decimal(0.0)  # type: ignore
 
     def get_total_pension(self) -> Decimal:
@@ -79,9 +78,9 @@ class Grade:
         if self.housing:
             return self.gross * var.HOUSING_PERC.value / 100
         return Decimal(0.0)
-    
-    def get_nsitf(self)-> Decimal | None:
-        return Decimal(self.get_bht() * 1 / 100)
+
+    def get_nsitf(self) -> Decimal | None:
+        return Decimal(self.gross * 1 / 100)
 
     def get_gross_income(self) -> Decimal:
         return Decimal(self.get_annual_gross()) - Decimal(self.pension_logic())
@@ -90,8 +89,8 @@ class Grade:
         return self.get_gross_income() * 20 / 100
 
     def get_consolidated(self) -> Decimal:
-        if self.get_gross_income() * 1 / 100 > var.TWO_HUND.value:
-            return self.get_gross_income() * 1 / 100
+        if self.get_annual_gross() * 1 / 100 > var.TWO_HUND.value:
+            return self.get_annual_gross() * 1 / 100
         return var.TWO_HUND.value  # type: ignore
 
     def get_consolidated_relief(self) -> Decimal:
@@ -139,43 +138,39 @@ class Grade:
 
     # calculate for the second #300,000:00 or less of taxable income
     def third_taxable(self) -> Decimal:  # type: ignore
-        if (
+        if (self.get_taxable_income() - var.FIRST_TAXABLE_VARIABLES.value) > 0 and (
             self.get_taxable_income() - var.FIRST_TAXABLE_VARIABLES.value
-        ) >= var.FIRST_TAXABLE_VARIABLES.value:
-            return Decimal(300000 * 11 / 100)
+        ) <= var.FIRST_TAXABLE_VARIABLES.value:
+            return Decimal((self.get_taxable_income() - 300000) * 11 / 100)
 
         elif (  # noqa: RET505
             self.get_taxable_income() - var.FIRST_TAXABLE_VARIABLES.value
-        ) <= var.FIRST_TAXABLE_VARIABLES.value:
-            return (
-                Decimal(self.get_taxable_income() - var.FIRST_TAXABLE_VARIABLES.value)
-                * 11
-                / 100
-            )
+        ) >= var.FIRST_TAXABLE_VARIABLES.value:
+            return var.FIRST_TAXABLE_VARIABLES.value * 11 / 100
         return Decimal(0)
 
     # calculate for taxable income reminning after the #600,000 deduction,
     # #500,000:00 or less of taxable income
     def fourth_taxable(self) -> Decimal:  # type: ignore
         if (self.get_taxable_income() - var.SIX_K.value) >= var.FIVE_K.value:
-            return Decimal(var.SIX_K.value * 15 / 100)
+            return Decimal(var.FIVE_K.value * 15 / 100)
 
-        elif (  # noqa: RET505
+        elif (self.get_taxable_income() - var.SIX_K.value) > 0 and (  # noqa: RET505
             self.get_taxable_income() - var.SIX_K.value
         ) <= var.FIVE_K.value:  # noqa: RET505
             return Decimal(self.get_taxable_income() - var.SIX_K.value) * 15 / 100
-        return None  # type: ignore
+        return Decimal(0)  # type: ignore
 
     # calculate for taxable income reminning after the #1,100,000 deduction,
     # second #500,000:00 or less of taxable income
     def fifth_taxable(self) -> Decimal:  # type: ignore
-        if self.get_taxable_income() - var.ONE_ONE_M.value >= var.SIX_K.value:
-            return Decimal(var.SIX_K.value * 19 / 100)
-        elif (  # noqa: RET505
+        if self.get_taxable_income() - var.ONE_ONE_M.value >= var.FIVE_K.value:
+            return Decimal(var.FIVE_K.value * 19 / 100)
+        elif (self.get_taxable_income() - var.ONE_ONE_M.value) > 0 and (  # noqa: RET505
             self.get_taxable_income() - var.ONE_ONE_M.value
-        ) < var.SIX_K.value:  # noqa: RET505
+        ) < var.FIVE_K.value:  # noqa: RET505
             return Decimal(self.get_taxable_income() - var.ONE_ONE_M.value) * 19 / 100
-        return None  # type: ignore
+        return Decimal(0)  # type: ignore
 
     # calculate for taxable income reminning after the #1,600,000 deduction,
     # #1,600,000:00 or less of taxable income
@@ -183,13 +178,13 @@ class Grade:
         if self.get_taxable_income() - var.ONE_SIX_M.value >= var.ONE_SIX_M.value:
             return Decimal(var.ONE_SIX_M.value * 21 / 100)
 
-        elif (  # noqa: RET505
+        elif (self.get_taxable_income() - var.ONE_SIX_M.value) > 0 and (  # noqa: RET505
             self.get_taxable_income() - var.ONE_SIX_M.value
         ) < var.ONE_SIX_M.value:  # noqa: RET505
             return Decimal(self.get_taxable_income() - var.ONE_SIX_M.value) * 21 / 100
         elif Decimal(self.get_taxable_income() - var.ONE_SIX_M.value) <= 0:
             return 0  # type: ignore
-        return None  # type: ignore
+        return Decimal(0)  # type: ignore
 
     # calculate for taxable income reminning after the #3,200,000 deduction,
     # #3,200,000:00 or less of taxable income
@@ -198,13 +193,16 @@ class Grade:
             return Decimal(
                 (self.get_taxable_income() - var.THREE_TWO_M.value) * 24 / 100
             )
-        elif (  # noqa: RET505
-            self.get_taxable_income() - var.THREE_TWO_M.value
-        ) < var.THREE_TWO_M.value:
-            return Decimal(
-                (self.get_taxable_income() - var.THREE_TWO_M.value) * 24 / 100
-            )
-        return None  # type: ignore
+
+        elif Decimal(self.get_taxable_income() - var.THREE_TWO_M.value) <= 0:
+            return 0  # type: ignore
+        # elif (  # noqa: RET505
+        #     self.get_taxable_income() - var.THREE_TWO_M.value
+        # ) < var.THREE_TWO_M.value:
+        #     return Decimal(
+        #         (self.get_taxable_income() - var.THREE_TWO_M.value) * 24 / 100
+        #     )
+        return Decimal(0)  # type: ignore
 
     def payee_logic(self) -> Decimal:  # type: ignore  # noqa: PLR0911
         if self.get_taxable_income() <= var.NON_TAXABLE_VARIABLES.value:
@@ -250,7 +248,7 @@ class Grade:
                 + self.sixth_taxable(),
                 2,
             )
-        elif self.get_taxable_income() >= var.THREE_TWO_M.value:
+        elif self.get_taxable_income() >= var.SIX_FOUR_M.value:
             return round(
                 self.second_taxable()
                 + self.third_taxable()
@@ -275,12 +273,11 @@ class Grade:
         if (self.get_gross_income()) - (self.payee_logic()) - self.get_water_fee() <= 0:
             return self.gross
         return round(
-            (self.get_gross_income() / 12)
-            - (self.payee_logic() / 12)
-            - (self.get_health_empl())
-            - (self.get_water_fee())
-            - (self.get_housing())
-            - (self.get_nsitf()/12),
+            (self.gross) - (self.payee_logic() / 12),
+            # - (self.get_health_empl())
+            # - (self.get_water_fee())
+            # - (self.get_housing()),
+            # - (self.get_nsitf() / 12),
             2,
         )
 
@@ -291,14 +288,25 @@ class Grade:
 
 
 if __name__ == "__main__":
-    salary = int(input("enter your salary: "))
+    salary = Decimal(input("enter your salary: "))
     emp = Grade(gross=salary, health_ins=False, contrib=True)  # type: ignore
     print(emp.__str__())
     print(f"Annual Income: ₦{emp.get_annual_gross():,.2f}")
     print(f"Water: ₦{emp.get_water_fee():,.2f}")
     print(f"housing: ₦{emp.get_housing():,.2f}")
+    print(f"cons relief: ₦{emp.get_consolidated_relief():,.2f}")
+    print(f"cons: ₦{emp.get_consolidated():,.2f}")
+    print(f"housing: ₦{emp.get_housing():,.2f}")
+    print(f"first taxable: {emp.first_taxable():,.2f}")
+    print(f"second taxable: {emp.second_taxable():,.2f}")
+    print(f"third taxable: {emp.third_taxable():,.2f}")
+    print(f"fourth taxable: {emp.fourth_taxable():,.2f}")
+    print(f"fifth taxable: {emp.fifth_taxable():,.2f}")
+    print(f"sixth taxable: {emp.sixth_taxable():,.2f}")
+    print(f"seventh taxable: {emp.seventh_taxable():,.2f}")
+    print(f"taxable Income: {emp.get_taxable_income():,.2f}")
     print(f"health: ₦{emp.get_health_empl()/12:,.2f}")
-    print(f"EMplyee Pension Contribution: ₦{emp.get_pension_employees()/12:,.2f}")
-    print(f"employers pension contribution: ₦{emp.get_pension_employer()/12:,.2f}")
-    print(f"employee Gross income: ₦{emp.get_gross_income()/12:,.2f}")
-    print(f"net pay for the year: ₦{emp.get_net_pay()*12:,.2f}")
+    print(f"EMplyee Pension Contribution: ₦{emp.get_pension_employees():,.2f}")
+    print(f"employers pension contribution: ₦{emp.get_pension_employer():,.2f}")
+    print(f"employee Gross income: ₦{emp.get_gross_income():,.2f}")
+    print(f"net pay for the year: ₦{emp.get_net_pay():,.2f}")

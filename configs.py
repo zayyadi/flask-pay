@@ -45,6 +45,9 @@ class Variable(enum.Enum):
     THREE_TWO_M = Decimal(
         3200000,
     )
+    SIX_FOUR_M = Decimal(
+        6400000,
+    )
     THREE_SIXTY = Decimal(360000)
     TWO_HUND = Decimal(200000)
     SEVENTY_K = Decimal(70000)
