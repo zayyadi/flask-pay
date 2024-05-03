@@ -63,6 +63,12 @@ input[type="number"] {
     border-radius: 10px;
 }
 
+.chart-container {
+    width: 400px;
+    height: 400px;
+    margin: 20px auto;
+}
+
 button {
     background-color: #0074cc;
     color: #fff;

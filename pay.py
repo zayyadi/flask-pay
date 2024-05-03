@@ -54,14 +54,14 @@ class Grade:
 
     def get_pension_employees(self) -> Decimal:
         if self.get_annual_gross() <= var.THREE_SIXTY.value:
-            return 0.0  # type: ignore
+            return Decimal(0.0)  # type: ignore
         if self.contrib is True:
             return self.get_annual_gross() * 8 / 100
         return self.get_annual_gross() * 18 / 100  # type: ignore
 
     def get_pension_employer(self) -> Decimal:
         if self.get_annual_gross() <= var.THREE_SIXTY.value:
-            return 0.0  # type: ignore
+            return Decimal(0.0)  # type: ignore
         if self.contrib is True:
             return self.get_annual_gross() * 10 / 100  # type: ignore
         return Decimal(0.0)  # type: ignore
@@ -71,7 +71,7 @@ class Grade:
 
     def pension_logic(self) -> Decimal:
         if self.get_annual_gross() <= var.THREE_SIXTY.value:
-            return 0.0  # type: ignore
+            return Decimal(0.0)  # type: ignore
         return self.get_pension_employees()
 
     def get_housing(self):
@@ -123,7 +123,7 @@ class Grade:
     #  who are not eligible for Income tax deduction
     def first_taxable(self) -> Decimal:  # type: ignore
         if self.get_taxable_income() <= var.NON_TAXABLE_VARIABLES.value:
-            return 0  # type: ignore
+            return Decimal(0)  # type: ignore
         return Decimal(0.0)
 
     # calculate for the first #300,000:00 or less of taxable income
@@ -182,8 +182,6 @@ class Grade:
             self.get_taxable_income() - var.ONE_SIX_M.value
         ) < var.ONE_SIX_M.value:  # noqa: RET505
             return Decimal(self.get_taxable_income() - var.ONE_SIX_M.value) * 21 / 100
-        elif Decimal(self.get_taxable_income() - var.ONE_SIX_M.value) <= 0:
-            return 0  # type: ignore
         return Decimal(0)  # type: ignore
 
     # calculate for taxable income reminning after the #3,200,000 deduction,
@@ -258,7 +256,7 @@ class Grade:
                 + self.seventh_taxable(),
                 2,
             )
-        return None  # type: ignore
+        return Decimal(0)  # type: ignore
 
     def get_water_fee(self) -> Decimal:
         if self.gross < var.SEVENTY_K.value:
@@ -273,10 +271,12 @@ class Grade:
         if (self.get_gross_income()) - (self.payee_logic()) - self.get_water_fee() <= 0:
             return self.gross
         return round(
-            (self.gross) - (self.payee_logic() / 12),
-            # - (self.get_health_empl())
-            # - (self.get_water_fee())
-            # - (self.get_housing()),
+            (self.gross)
+            - (self.payee_logic() / 12)
+            - (self.pension_logic() / 12)
+            - (self.get_health_empl())
+            - (self.get_water_fee())
+            - (self.get_housing()),
             # - (self.get_nsitf() / 12),
             2,
         )
