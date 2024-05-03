@@ -274,9 +274,9 @@ class Grade:
             (self.gross)
             - (self.payee_logic() / 12)
             - (self.pension_logic() / 12)
-            - (self.get_health_empl())
-            - (self.get_water_fee())
-            - (self.get_housing()),
+            - (self.get_health_empl() or 0)
+            - (self.get_water_fee() or 0)
+            - (self.get_housing() or 0),
             # - (self.get_nsitf() / 12),
             2,
         )
@@ -292,6 +292,7 @@ if __name__ == "__main__":
     emp = Grade(gross=salary, health_ins=False, contrib=True)  # type: ignore
     print(emp.__str__())
     print(f"Annual Income: ₦{emp.get_annual_gross():,.2f}")
+    print(f"Gross: ₦{emp.gross:,.2f}")
     print(f"Water: ₦{emp.get_water_fee():,.2f}")
     print(f"housing: ₦{emp.get_housing():,.2f}")
     print(f"cons relief: ₦{emp.get_consolidated_relief():,.2f}")
@@ -306,7 +307,8 @@ if __name__ == "__main__":
     print(f"seventh taxable: {emp.seventh_taxable():,.2f}")
     print(f"taxable Income: {emp.get_taxable_income():,.2f}")
     print(f"health: ₦{emp.get_health_empl()/12:,.2f}")
-    print(f"EMplyee Pension Contribution: ₦{emp.get_pension_employees():,.2f}")
+    print(f"EMplyee Pension Contribution: ₦{emp.get_pension_employees()/12:,.2f}")
+    print(f"EMplyee Pension logic: ₦{emp.pension_logic()/12:,.2f}")
     print(f"employers pension contribution: ₦{emp.get_pension_employer():,.2f}")
     print(f"employee Gross income: ₦{emp.get_gross_income():,.2f}")
     print(f"net pay for the year: ₦{emp.get_net_pay():,.2f}")
